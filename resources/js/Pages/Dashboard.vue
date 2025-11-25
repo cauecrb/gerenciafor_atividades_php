@@ -1,11 +1,12 @@
 <script setup>
-import { router } from '@inertiajs/vue3'
 import AlertBanner from '../Components/AlertBanner.vue'
-const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
+import AppLayout from '../Layouts/AppLayout.vue'
+defineOptions({ layout: AppLayout })
 const props = defineProps({
   pending: { type: Array, default: () => [] },
   overdue: { type: Array, default: () => [] },
   completed: { type: Array, default: () => [] },
+  flash: { type: Object, default: () => ({}) },
 })
 
 function formatDate(dt) {
@@ -14,16 +15,12 @@ function formatDate(dt) {
   return d.toLocaleString()
 }
 
-function logout() {
-  router.post(route('logout'), { _token: csrf })
-}
 </script>
 
 <template>
-  <div style="max-width: 900px; margin: 40px auto; font-family: sans-serif;">
+  <div style="max-width: 900px; margin: 0 auto; font-family: sans-serif;">
     <div style="display:flex; align-items:center; justify-content:space-between;">
       <h1>Tarefas</h1>
-      <button type="button" @click="logout">Sair</button>
     </div>
 
     <AlertBanner v-if="props.flash?.success" variant="success" :message="props.flash.success" />
