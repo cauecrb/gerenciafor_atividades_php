@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File as FileFacade;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ProjectController extends Controller
@@ -34,12 +36,18 @@ class ProjectController extends Controller
             'description' => ['nullable', 'string'],
             'start_date' => ['nullable', 'date'],
             'due_date' => ['nullable', 'date'],
-            'attachment' => ['nullable', 'file', 'mimetypes:application/pdf,image/jpeg,image/png', 'max:5120'],
+            'attachment' => ['nullable', 'file', 'extensions:pdf,jpeg,jpg,png', 'max:5120'],
         ]);
 
         $path = null;
         if ($request->file('attachment')) {
-            $path = $request->file('attachment')->store('attachments', 'public');
+            $file = $request->file('attachment');
+            $ext = strtolower($file->getClientOriginalExtension());
+            $filename = Str::uuid().'.'.$ext;
+            $destination = public_path('storage/attachments');
+            FileFacade::ensureDirectoryExists($destination);
+            $file->move($destination, $filename);
+            $path = 'attachments/'.$filename;
         }
 
         $project = Project::create([
@@ -72,14 +80,20 @@ class ProjectController extends Controller
             'description' => ['nullable', 'string'],
             'start_date' => ['nullable', 'date'],
             'due_date' => ['nullable', 'date'],
-            'attachment' => ['nullable', 'file', 'mimetypes:application/pdf,image/jpeg,image/png', 'max:5120'],
+            'attachment' => ['nullable', 'file', 'extensions:pdf,jpeg,jpg,png', 'max:5120'],
         ]);
 
         if ($request->file('attachment')) {
             if ($project->attachment_path) {
                 Storage::disk('public')->delete($project->attachment_path);
             }
-            $project->attachment_path = $request->file('attachment')->store('attachments', 'public');
+            $file = $request->file('attachment');
+            $ext = strtolower($file->getClientOriginalExtension());
+            $filename = Str::uuid().'.'.$ext;
+            $destination = public_path('storage/attachments');
+            FileFacade::ensureDirectoryExists($destination);
+            $file->move($destination, $filename);
+            $project->attachment_path = 'attachments/'.$filename;
         }
 
         $project->title = $validated['title'];
