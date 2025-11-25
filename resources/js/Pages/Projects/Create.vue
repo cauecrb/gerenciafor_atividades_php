@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/vue3'
 import AlertBanner from '../../Components/AlertBanner.vue'
 import AppLayout from '../../Layouts/AppLayout.vue'
 import FilePicker from '../../Components/FilePicker.vue'
+import DatePicker from '../../Components/DatePicker.vue'
 defineOptions({ layout: AppLayout })
 
 const form = useForm({
@@ -39,11 +40,11 @@ function submit() {
       <div class="form-row">
         <div class="field">
           <label class="label">Data de início</label>
-          <input class="input" v-model="form.start_date" type="date" />
+          <DatePicker v-model="form.start_date" />
         </div>
         <div class="field">
           <label class="label">Previsão de conclusão</label>
-          <input class="input" v-model="form.due_date" type="date" />
+          <DatePicker v-model="form.due_date" />
         </div>
       </div>
 
