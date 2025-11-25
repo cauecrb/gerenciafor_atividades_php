@@ -1,7 +1,8 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3'
+import AlertBanner from '../../Components/AlertBanner.vue'
 
-const csrf = document.querySelector('meta[name="csrf-token"])?.content || ''
+const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
 const form = useForm({
   name: '',
   email: '',
@@ -11,7 +12,9 @@ const form = useForm({
 })
 
 function submit() {
-  form.post(route('register'))
+  form.post(route('register'), {
+    preserveScroll: true,
+  })
 }
 </script>
 
@@ -20,6 +23,7 @@ function submit() {
     <h1>Criar conta</h1>
 
     <form @submit.prevent="submit">
+      <AlertBanner v-if="Object.keys(form.errors).length" variant="error" message="Corrija os campos destacados" />
       <label>Nome</label>
       <input v-model="form.name" type="text" />
       <div v-if="form.errors.name" style="color:red">{{ form.errors.name }}</div>

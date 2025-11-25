@@ -9,3 +9,34 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Base layout adjustments for readability */
+html, body {
+    background: #ffffff;
+    color: #1b1b18;
+}
+
+/* Simple default styling for forms */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+button {
+    display: block;
+    width: 100%;
+    margin: 0.25rem 0 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+}
+
+button {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+    cursor: pointer;
+}
+
+button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

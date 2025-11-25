@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Task;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $user = Auth::user();
+
+        $now = now();
+
+        $pending = Task::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->where(function ($q) use ($now) {
+                $q->whereNull('due_at')->orWhere('due_at', '>=', $now);
+            })
+            ->orderBy('due_at')
+            ->get();
+
+        $overdue = Task::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->whereNotNull('due_at')
+            ->where('due_at', '<', $now)
+            ->orderBy('due_at')
+            ->get();
+
+        $completed = Task::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->orderByDesc('completed_at')
+            ->get();
+
+        return Inertia::render('Dashboard', [
+            'pending' => $pending,
+            'overdue' => $overdue,
+            'completed' => $completed,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
+        ]);
+    }
+}

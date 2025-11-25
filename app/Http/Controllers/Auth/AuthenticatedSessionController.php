@@ -12,7 +12,12 @@ class AuthenticatedSessionController extends Controller
 {
     public function create()
     {
-        return Inertia::render('Auth/Login');
+        return Inertia::render('Auth/Login', [
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
+        ]);
     }
 
     public function store(Request $request)
@@ -40,6 +45,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', __('Sessão encerrada com sucesso.'));
     }
 }

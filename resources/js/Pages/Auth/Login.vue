@@ -1,7 +1,9 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import AlertBanner from '../../Components/AlertBanner.vue'
 
-const csrf = document.querySelector('meta[name="csrf-token"])?.content || ''
+const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
 const form = useForm({
   email: '',
   password: '',
@@ -9,8 +11,16 @@ const form = useForm({
   _token: csrf,
 })
 
+const generalError = ref('')
+
 function submit() {
-  form.post(route('login'))
+  generalError.value = ''
+  form.post(route('login'), {
+    preserveScroll: true,
+    onError: () => {
+      generalError.value = 'Credenciais incorretas'
+    },
+  })
 }
 </script>
 
@@ -19,6 +29,7 @@ function submit() {
     <h1>Entrar</h1>
 
     <form @submit.prevent="submit">
+      <AlertBanner v-if="generalError" variant="error" :message="generalError" />
       <label>Email</label>
       <input v-model="form.email" type="email" />
       <div v-if="form.errors.email" style="color:red">{{ form.errors.email }}</div>
