@@ -10,6 +10,9 @@ use Inertia\Inertia;
 
 class AuthenticatedSessionController extends Controller
 {
+    /**
+     * Exibe a tela de login com mensagens flash.
+     */
     public function create()
     {
         return Inertia::render('Auth/Login', [
@@ -20,6 +23,11 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
+    /**
+     * Autentica o usuário e regenera a sessão.
+     *
+     * @param Request $request
+     */
     public function store(Request $request)
     {
         $credentials = $request->validate([
@@ -38,6 +46,11 @@ class AuthenticatedSessionController extends Controller
         return redirect()->intended(route('dashboard'));
     }
 
+    /**
+     * Faz logout do usuário e invalida a sessão.
+     *
+     * @param Request $request
+     */
     public function destroy(Request $request)
     {
         Auth::guard('web')->logout();

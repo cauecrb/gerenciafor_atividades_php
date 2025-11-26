@@ -11,6 +11,11 @@ use Inertia\Inertia;
 
 class TaskController extends Controller
 {
+    /**
+     * Lista tarefas do usuário com filtros de status e prioridade.
+     *
+     * @param Request $request
+     */
     public function index(Request $request)
     {
         $userId = Auth::id();
@@ -40,11 +45,19 @@ class TaskController extends Controller
         ]);
     }
 
+    /**
+     * Renderiza o formulário de criação de tarefa.
+     */
     public function create()
     {
         return Inertia::render('Tasks/Create');
     }
 
+    /**
+     * Valida e cria uma tarefa, opcionalmente salva anexo em PDF.
+     *
+     * @param Request $request
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -80,6 +93,11 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with('success', __('Tarefa criada.'));
     }
 
+    /**
+     * Exibe o formulário de edição da tarefa.
+     *
+     * @param Task $task
+     */
     public function edit(Task $task)
     {
         abort_unless($task->user_id === Auth::id(), 403);
@@ -89,6 +107,12 @@ class TaskController extends Controller
         ]);
     }
 
+    /**
+     * Atualiza campos da tarefa e o anexo, com autorização.
+     *
+     * @param Request $request
+     * @param Task $task
+     */
     public function update(Request $request, Task $task)
     {
         abort_unless($task->user_id === Auth::id(), 403);
@@ -130,6 +154,11 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with('success', __('Tarefa atualizada.'));
     }
 
+    /**
+     * Remove a tarefa e seu anexo, com autorização.
+     *
+     * @param Task $task
+     */
     public function destroy(Task $task)
     {
         abort_unless($task->user_id === Auth::id(), 403);
@@ -144,6 +173,11 @@ class TaskController extends Controller
         return back()->with('success', __('Tarefa excluída.'));
     }
 
+    /**
+     * Marca a tarefa como concluída e define data de conclusão.
+     *
+     * @param Task $task
+     */
     public function complete(Task $task)
     {
         abort_unless($task->user_id === Auth::id(), 403);
@@ -154,6 +188,12 @@ class TaskController extends Controller
         return back()->with('success', __('Tarefa marcada como concluída.'));
     }
 
+    /**
+     * Atualiza o status da tarefa e ajusta conclusão quando aplicável.
+     *
+     * @param Request $request
+     * @param Task $task
+     */
     public function status(Request $request, Task $task)
     {
         abort_unless($task->user_id === Auth::id(), 403);

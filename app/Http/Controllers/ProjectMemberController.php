@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectMemberController extends Controller
 {
+    /**
+     * Adiciona um membro ao projeto por email, evitando duplicidade e o próprio proprietário.
+     *
+     * @param Request $request
+     * @param Project $project
+     */
     public function store(Request $request, Project $project)
     {
         abort_unless($project->user_id === Auth::id(), 403);
@@ -28,6 +34,12 @@ class ProjectMemberController extends Controller
         return back()->with('success', __('Membro adicionado com sucesso.'));
     }
 
+    /**
+     * Remove um membro do projeto.
+     *
+     * @param Project $project
+     * @param User $user
+     */
     public function destroy(Project $project, User $user)
     {
         abort_unless($project->user_id === Auth::id(), 403);

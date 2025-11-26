@@ -11,6 +11,12 @@ use Inertia\Inertia;
 
 class ProjectTaskController extends Controller
 {
+    /**
+     * Verifica se o usuário autenticado pode acessar o projeto.
+     *
+     * @param Project $project
+     * @return bool
+     */
     protected function canAccess(Project $project): bool
     {
         $userId = Auth::id();
@@ -21,6 +27,11 @@ class ProjectTaskController extends Controller
         return $project->members()->where('users.id', $userId)->exists();
     }
 
+    /**
+     * Lista tarefas do projeto e usuários atribuíveis.
+     *
+     * @param Project $project
+     */
     public function index(Project $project)
     {
         abort_unless($this->canAccess($project), 403);
@@ -39,6 +50,12 @@ class ProjectTaskController extends Controller
         ]);
     }
 
+    /**
+     * Cria uma tarefa vinculada ao projeto e atribui usuários.
+     *
+     * @param Request $request
+     * @param Project $project
+     */
     public function store(Request $request, Project $project)
     {
         abort_unless($this->canAccess($project), 403);
@@ -67,6 +84,12 @@ class ProjectTaskController extends Controller
         return redirect()->route('projects.tasks.index', $project)->with('success', __('Tarefa criada.'));
     }
 
+    /**
+     * Exibe o formulário de edição de tarefa do projeto.
+     *
+     * @param Project $project
+     * @param Task $task
+     */
     public function edit(Project $project, Task $task)
     {
         abort_unless($this->canAccess($project) && $task->project_id === $project->id, 403);
@@ -81,6 +104,13 @@ class ProjectTaskController extends Controller
         ]);
     }
 
+    /**
+     * Atualiza tarefa do projeto e sincroniza usuários atribuídos.
+     *
+     * @param Request $request
+     * @param Project $project
+     * @param Task $task
+     */
     public function update(Request $request, Project $project, Task $task)
     {
         abort_unless($this->canAccess($project) && $task->project_id === $project->id, 403);
@@ -105,6 +135,12 @@ class ProjectTaskController extends Controller
         return redirect()->route('projects.tasks.index', $project)->with('success', __('Tarefa atualizada.'));
     }
 
+    /**
+     * Remove tarefa vinculada ao projeto.
+     *
+     * @param Project $project
+     * @param Task $task
+     */
     public function destroy(Project $project, Task $task)
     {
         abort_unless($this->canAccess($project) && $task->project_id === $project->id, 403);
@@ -113,6 +149,13 @@ class ProjectTaskController extends Controller
         return back()->with('success', __('Tarefa excluída.'));
     }
 
+    /**
+     * Atualiza o status da tarefa do projeto.
+     *
+     * @param Request $request
+     * @param Project $project
+     * @param Task $task
+     */
     public function status(Request $request, Project $project, Task $task)
     {
         abort_unless($this->canAccess($project) && $task->project_id === $project->id, 403);

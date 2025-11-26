@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
 {
+    /**
+     * Campos permitidos para atribuição em massa.
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
         'title',
@@ -18,6 +22,10 @@ class Project extends Model
         'attachment_path',
     ];
 
+    /**
+     * Conversões de tipos para atributos de data.
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -26,16 +34,28 @@ class Project extends Model
         ];
     }
 
+    /**
+     * Usuário proprietário do projeto.
+     * @return BelongsTo<User, Project>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Tarefas vinculadas ao projeto.
+     * @return HasMany<Task>
+     */
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
+    /**
+     * Membros convidados no projeto.
+     * @return BelongsToMany<User>
+     */
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();

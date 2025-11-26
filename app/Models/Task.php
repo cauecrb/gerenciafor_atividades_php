@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Task extends Model
 {
+    /**
+     * Campos permitidos para atribuição em massa.
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
         'project_id',
@@ -20,6 +24,10 @@ class Task extends Model
         'attachment_path',
     ];
 
+    /**
+     * Conversões de tipos para atributos de data/hora.
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -28,16 +36,28 @@ class Task extends Model
         ];
     }
 
+    /**
+     * Usuário proprietário da tarefa.
+     * @return BelongsTo<User, Task>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Projeto ao qual a tarefa pertence.
+     * @return BelongsTo<Project, Task>
+     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * Usuários atribuídos à tarefa (membros/assignees).
+     * @return BelongsToMany<User>
+     */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();

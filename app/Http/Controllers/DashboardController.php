@@ -8,6 +8,9 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
+    /**
+     * Consolida tarefas do usuário por status e renderiza o dashboard.
+     */
     public function index()
     {
         $user = Auth::user();

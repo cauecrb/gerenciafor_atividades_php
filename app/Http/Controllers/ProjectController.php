@@ -12,6 +12,9 @@ use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
+    /**
+     * Lista projetos do usuário autenticado e renderiza a página de índice.
+     */
     public function index()
     {
         $projects = Project::query()
@@ -24,11 +27,19 @@ class ProjectController extends Controller
         ]);
     }
 
+    /**
+     * Renderiza o formulário de criação de projeto.
+     */
     public function create()
     {
         return Inertia::render('Projects/Create');
     }
 
+    /**
+     * Valida e cria um novo projeto, opcionalmente salva anexo, e redireciona.
+     *
+     * @param Request $request
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -62,6 +73,11 @@ class ProjectController extends Controller
         return redirect()->route('projects.index')->with('success', __('Projeto criado com sucesso.'));
     }
 
+    /**
+     * Exibe o formulário de edição de projeto com lista de membros.
+     *
+     * @param Project $project
+     */
     public function edit(Project $project)
     {
         abort_unless($project->user_id === Auth::id(), 403);
@@ -72,6 +88,12 @@ class ProjectController extends Controller
         ]);
     }
 
+    /**
+     * Atualiza dados do projeto e anexo, com validação e autorização.
+     *
+     * @param Request $request
+     * @param Project $project
+     */
     public function update(Request $request, Project $project)
     {
         abort_unless($project->user_id === Auth::id(), 403);
@@ -106,6 +128,11 @@ class ProjectController extends Controller
         return redirect()->route('projects.index')->with('success', __('Projeto atualizado com sucesso.'));
     }
 
+    /**
+     * Remove projeto e anexo, com autorização.
+     *
+     * @param Project $project
+     */
     public function destroy(Project $project)
     {
         abort_unless($project->user_id === Auth::id(), 403);

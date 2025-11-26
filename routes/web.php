@@ -10,6 +10,7 @@ Route::get('/', function () {
 });
 
 Route::middleware('guest')->group(function () {
+    // Rotas públicas para convidados: registro e login
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
 
@@ -18,6 +19,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    // Rotas protegidas: dashboard, logout, projetos e tarefas
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

@@ -10,11 +10,19 @@ use Inertia\Inertia;
 
 class RegisteredUserController extends Controller
 {
+    /**
+     * Exibe o formulário de cadastro.
+     */
     public function create()
     {
         return Inertia::render('Auth/Register');
     }
 
+    /**
+     * Valida e cria um novo usuário, efetuando login após cadastro.
+     *
+     * @param Request $request
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
