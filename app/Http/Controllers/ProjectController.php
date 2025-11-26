@@ -68,6 +68,7 @@ class ProjectController extends Controller
 
         return Inertia::render('Projects/Edit', [
             'project' => $project,
+            'members' => $project->members()->select('id', 'name', 'email')->get(),
         ]);
     }
 

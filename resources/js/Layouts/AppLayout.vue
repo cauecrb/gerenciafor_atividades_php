@@ -16,6 +16,7 @@ function logout() {
         <a :href="route('dashboard')" style="color:#f3f4f6; text-decoration:none; padding:.5rem 1rem; display:block;">Dashboard</a>
         <a :href="route('projects.index')" style="color:#f3f4f6; text-decoration:none; padding:.5rem 1rem; display:block;">Gerenciar Projetos</a>
         <a :href="route('projects.create')" style="color:#f3f4f6; text-decoration:none; padding:.5rem 1rem; display:block;">Criar Projeto</a>
+        <a :href="route('tasks.index')" style="color:#f3f4f6; text-decoration:none; padding:.5rem 1rem; display:block;">Minhas Tarefas</a>
         <button type="button" @click="logout" style="margin-top:1rem; margin-left:1rem; width: calc(100% - 2rem); background:#ef4444; color:#fff; border:none; border-radius:.25rem; padding:.5rem; cursor:pointer;">Sair</button>
       </nav>
     </aside>
@@ -26,4 +27,3 @@ function logout() {
     </main>
   </div>
 </template>
-

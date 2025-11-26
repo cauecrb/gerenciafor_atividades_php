@@ -16,7 +16,8 @@ const viewMonth = ref(today.getMonth())
 function pad(n) { return String(n).padStart(2, '0') }
 function toDisplayFromISO(iso) {
   if (!iso) return ''
-  const parts = iso.split('-')
+  const datePart = iso.split('T')[0]
+  const parts = datePart.split('-')
   if (parts.length !== 3) return ''
   return `${pad(Number(parts[2]))}/${pad(Number(parts[1]))}/${parts[0]}`
 }

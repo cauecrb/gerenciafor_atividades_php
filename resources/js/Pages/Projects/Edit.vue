@@ -8,6 +8,7 @@ defineOptions({ layout: AppLayout })
 
 const props = defineProps({
   project: { type: Object, required: true },
+  members: { type: Array, default: () => [] },
 })
 
 const form = useForm({
@@ -23,6 +24,19 @@ function submit() {
     forceFormData: true,
     method: 'put',
   })
+}
+
+let emailToAdd = ''
+function addMember() {
+  if (!emailToAdd) return
+  const payload = { email: emailToAdd }
+  window.Inertia.post(route('projects.members.store', props.project.id), payload, {
+    onSuccess: () => { emailToAdd = '' },
+  })
+}
+
+function removeMember(userId) {
+  window.Inertia.delete(route('projects.members.destroy', { project: props.project.id, user: userId }))
 }
 </script>
 
@@ -64,5 +78,26 @@ function submit() {
         <button type="submit" class="btn btn-primary" :disabled="form.processing">Salvar</button>
       </div>
     </form>
+
+    <div class="form-card" style="margin-top:1rem;">
+      <h2 style="font-weight:700; margin-bottom:.5rem;">Membros do Projeto</h2>
+      <div style="display:flex; gap:.5rem; align-items:flex-end; margin-bottom:.75rem;">
+        <div class="field" style="flex:1; margin:0;">
+          <label class="label">Adicionar por email</label>
+          <input class="input" v-model="emailToAdd" type="email" placeholder="usuario@exemplo.com" />
+        </div>
+        <button type="button" class="btn btn-primary" @click="addMember">Adicionar</button>
+      </div>
+      <ul>
+        <li v-for="m in props.members" :key="m.id" style="display:flex; justify-content:space-between; padding:.5rem 0; border-bottom:1px solid #f3f4f6;">
+          <div>
+            <div style="font-weight:600;">{{ m.name }}</div>
+            <div style="color:#6b7280; font-size:13px;">{{ m.email }}</div>
+          </div>
+          <button type="button" class="btn btn-outline" @click="removeMember(m.id)">Remover</button>
+        </li>
+        <li v-if="!props.members.length" style="color:#6b7280;">Nenhum membro adicionado</li>
+      </ul>
+    </div>
   </div>
 </template>
