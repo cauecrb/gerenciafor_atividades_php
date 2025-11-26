@@ -52,7 +52,11 @@ function removeMember(userId) {
 
 <template>
   <div style="max-width: 800px; margin: 40px auto;">
-    <h1 style="font-size:1.5rem; font-weight:700; margin-bottom:1rem;">Editar Projeto</h1>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+      <h1 style="font-size:1.5rem; font-weight:700;">Editar Projeto</h1>
+      <!-- Ação para acessar/criar tarefas do projeto -->
+      <a :href="route('projects.tasks.index', props.project.id)"><button type="button" class="btn btn-primary">Tarefas</button></a>
+    </div>
     <AlertBanner v-if="Object.keys(form.errors).length" variant="error" message="Corrija os campos destacados" />
     <form class="form-card" @submit.prevent="submit">
       <div class="field">
