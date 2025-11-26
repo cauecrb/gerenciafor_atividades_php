@@ -131,3 +131,22 @@ Notas:
 ## Observações
 - Uploads de tarefas são salvos em `public/storage/task_attachments` (acesso via `/storage/task_attachments/<arquivo>.pdf`).
 - Formatação de datas no front padronizada para `dd/mm/aaaa`.
+
+## Hospedagem (AlwaysData)
+- Site PHP com `document root` em `public/`.
+- Banco MySQL criado no painel (copie `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
+- Upload do código por Git/SSH (recomendado) ou SFTP.
+- Comandos no servidor (SSH):
+  - `composer install --no-dev --prefer-dist --optimize-autoloader`
+  - `npm ci && npm run build` (se o servidor tiver Node; caso contrário, envie `public/build` gerado localmente)
+  - `php artisan key:generate` (ou defina `APP_KEY` direto no `.env`)
+  - `php artisan config:cache && php artisan route:cache && php artisan view:cache`
+  - `php artisan migrate --force`
+- Variáveis `.env` (produção):
+  - `APP_ENV=production`
+  - `APP_URL=https://seu-subdominio.alwaysdata.net`
+  - `APP_KEY=...`
+  - `DB_CONNECTION=mysql`
+  - `DB_HOST=...` `DB_PORT=3306` `DB_DATABASE=...` `DB_USERNAME=...` `DB_PASSWORD=...`
+  - `SESSION_DRIVER=cookie`
+- Observação: para persistir anexos em produção, considere `FILESYSTEM_DISK=s3` com um bucket S3/R2.

@@ -14,7 +14,9 @@ function remove(id) {
 
 function formatDate(d) {
   if (!d) return '-'
-  const parts = String(d).split('-')
+  let s = String(d)
+  if (s.includes('T')) s = s.split('T')[0]
+  const parts = s.split('-')
   if (parts.length !== 3) return d
   return `${parts[2].padStart(2,'0')}/${parts[1].padStart(2,'0')}/${parts[0]}`
 }
