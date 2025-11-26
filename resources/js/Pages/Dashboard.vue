@@ -82,16 +82,17 @@ function deleteTask(t) { if (!t.project_id) router.delete(route('tasks.destroy',
         <div class="kanban-header">Pendente</div>
         <div class="kanban-drop" @dragover="allowDrop" @drop="(e)=>onDropStatus(e,'pending')">
           <div v-for="t in props.pending" :key="t.id" class="kanban-card" draggable="true" @dragstart="(e)=>onDragStart(e,t)">
-            <div class="badges">
-              <span class="badge badge-status">{{ t.project_id ? 'Projeto' : 'Pessoal' }}</span>
-              <span class="badge" :class="{
-                'badge-priority-low': t.priority==='low',
-                'badge-priority-medium': t.priority==='medium',
-                'badge-priority-high': t.priority==='high'
-              }">{{ t.priority || 'medium' }}</span>
-            </div>
-            <div class="kanban-title">{{ t.title }}</div>
-            <div class="kanban-sub">{{ t.description }}</div>
+          <div class="badges">
+            <span class="badge badge-status">{{ t.project_id ? 'Projeto' : 'Pessoal' }}</span>
+            <span class="badge" :class="{
+              'badge-priority-low': t.priority==='low',
+              'badge-priority-medium': t.priority==='medium',
+              'badge-priority-high': t.priority==='high'
+            }">{{ t.priority || 'medium' }}</span>
+          </div>
+          <div class="kanban-sub" v-if="t.project && t.project.title"><span class="pill">Projeto: {{ t.project.title }}</span></div>
+          <div class="kanban-title">{{ t.title }}</div>
+          <div class="kanban-sub">{{ t.description }}</div>
             <div class="kanban-sub" v-if="t.due_at"><span class="pill">Vence: {{ formatDate(t.due_at) }}</span></div>
             <div class="actions" style="justify-content:flex-start; gap:.5rem; margin-top:.5rem;">
               <button class="btn btn-secondary" @click.stop="editTask(t)">Editar</button>
@@ -107,16 +108,17 @@ function deleteTask(t) { if (!t.project_id) router.delete(route('tasks.destroy',
         <div class="kanban-header">Em andamento</div>
         <div class="kanban-drop" @dragover="allowDrop" @drop="(e)=>onDropStatus(e,'in_progress')">
           <div v-for="t in props.inProgress" :key="t.id" class="kanban-card" draggable="true" @dragstart="(e)=>onDragStart(e,t)">
-            <div class="badges">
-              <span class="badge badge-status">{{ t.project_id ? 'Projeto' : 'Pessoal' }}</span>
-              <span class="badge" :class="{
-                'badge-priority-low': t.priority==='low',
-                'badge-priority-medium': t.priority==='medium',
-                'badge-priority-high': t.priority==='high'
-              }">{{ t.priority || 'medium' }}</span>
-            </div>
-            <div class="kanban-title">{{ t.title }}</div>
-            <div class="kanban-sub">{{ t.description }}</div>
+          <div class="badges">
+            <span class="badge badge-status">{{ t.project_id ? 'Projeto' : 'Pessoal' }}</span>
+            <span class="badge" :class="{
+              'badge-priority-low': t.priority==='low',
+              'badge-priority-medium': t.priority==='medium',
+              'badge-priority-high': t.priority==='high'
+            }">{{ t.priority || 'medium' }}</span>
+          </div>
+          <div class="kanban-sub" v-if="t.project && t.project.title"><span class="pill">Projeto: {{ t.project.title }}</span></div>
+          <div class="kanban-title">{{ t.title }}</div>
+          <div class="kanban-sub">{{ t.description }}</div>
             <div class="kanban-sub" v-if="t.due_at"><span class="pill">Vence: {{ formatDate(t.due_at) }}</span></div>
             <div class="actions" style="justify-content:flex-start; gap:.5rem; margin-top:.5rem;">
               <button class="btn btn-secondary" @click.stop="editTask(t)">Editar</button>
@@ -132,16 +134,17 @@ function deleteTask(t) { if (!t.project_id) router.delete(route('tasks.destroy',
         <div class="kanban-header">Concluída</div>
         <div class="kanban-drop" @dragover="allowDrop" @drop="(e)=>onDropStatus(e,'completed')">
           <div v-for="t in props.completed" :key="t.id" class="kanban-card" draggable="true" @dragstart="(e)=>onDragStart(e,t)">
-            <div class="badges">
-              <span class="badge badge-status">{{ t.project_id ? 'Projeto' : 'Pessoal' }}</span>
-              <span class="badge" :class="{
-                'badge-priority-low': t.priority==='low',
-                'badge-priority-medium': t.priority==='medium',
-                'badge-priority-high': t.priority==='high'
-              }">{{ t.priority || 'medium' }}</span>
-            </div>
-            <div class="kanban-title">{{ t.title }}</div>
-            <div class="kanban-sub">{{ t.description }}</div>
+          <div class="badges">
+            <span class="badge badge-status">{{ t.project_id ? 'Projeto' : 'Pessoal' }}</span>
+            <span class="badge" :class="{
+              'badge-priority-low': t.priority==='low',
+              'badge-priority-medium': t.priority==='medium',
+              'badge-priority-high': t.priority==='high'
+            }">{{ t.priority || 'medium' }}</span>
+          </div>
+          <div class="kanban-sub" v-if="t.project && t.project.title"><span class="pill">Projeto: {{ t.project.title }}</span></div>
+          <div class="kanban-title">{{ t.title }}</div>
+          <div class="kanban-sub">{{ t.description }}</div>
             <div class="kanban-sub" v-if="t.completed_at"><span class="pill">Concluída: {{ formatDate(t.completed_at) }}</span></div>
             <div class="actions" style="justify-content:flex-start; gap:.5rem; margin-top:.5rem;">
               <button class="btn btn-secondary" @click.stop="editTask(t)">Ver</button>

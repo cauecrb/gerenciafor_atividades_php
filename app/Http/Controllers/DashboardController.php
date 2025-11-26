@@ -31,6 +31,7 @@ class DashboardController extends Controller
             ->where(function ($q) use ($now) {
                 $q->whereNull('due_at')->orWhere('due_at', '>=', $now);
             })
+            ->with(['project:id,title'])
             ->orderBy('due_at')
             ->get();
         $overdue = Task::query()
@@ -41,6 +42,7 @@ class DashboardController extends Controller
             ->where('status', 'pending')
             ->whereNotNull('due_at')
             ->where('due_at', '<', $now)
+            ->with(['project:id,title'])
             ->orderBy('due_at')
             ->get();
         $completed = Task::query()
@@ -49,6 +51,7 @@ class DashboardController extends Controller
                     ->orWhereIn('project_id', $projectIds);
             })
             ->where('status', 'completed')
+            ->with(['project:id,title'])
             ->orderByDesc('completed_at')
             ->get();
 
@@ -58,6 +61,7 @@ class DashboardController extends Controller
                     ->orWhereIn('project_id', $projectIds);
             })
             ->where('status', 'in_progress')
+            ->with(['project:id,title'])
             ->orderBy('due_at')
             ->get();
 
