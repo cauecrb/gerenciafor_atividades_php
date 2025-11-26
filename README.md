@@ -76,14 +76,14 @@ erDiagram
     TASK }o--o{ USER : assigned
 
     USER {
-        bigint id PK
+        bigint id
         string name
         string email
         string password
     }
     PROJECT {
-        bigint id PK
-        bigint user_id FK
+        bigint id
+        bigint user_id
         string title
         text description
         date start_date
@@ -91,30 +91,31 @@ erDiagram
         string attachment_path
     }
     TASK {
-        bigint id PK
-        bigint user_id FK
-        bigint project_id FK NULL
+        bigint id
+        bigint user_id
+        bigint project_id
         string title
         text description
         string status
         string priority
-        datetime due_at NULL
-        datetime completed_at NULL
-        string attachment_path NULL
+        datetime due_at
+        datetime completed_at
+        string attachment_path
     }
     PROJECT_USER {
-        bigint id PK
-        bigint project_id FK
-        bigint user_id FK
-        unique(project_id, user_id)
+        bigint id
+        bigint project_id
+        bigint user_id
     }
     TASK_USER {
-        bigint id PK
-        bigint task_id FK
-        bigint user_id FK
-        unique(task_id, user_id)
+        bigint id
+        bigint task_id
+        bigint user_id
     }
 ```
+
+Notas:
+- Chaves únicas em tabelas pivot (`project_user`, `task_user`) foram omitidas no diagrama por limitação de sintaxe do Mermaid. Elas existem no banco via índice único composto.
 
 ## Observações
 - Uploads de tarefas são salvos em `public/storage/task_attachments` (acesso via `/storage/task_attachments/<arquivo>.pdf`).
