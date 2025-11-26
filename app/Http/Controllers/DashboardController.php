@@ -49,10 +49,20 @@ class DashboardController extends Controller
             ->orderByDesc('completed_at')
             ->get();
 
+        $inProgress = Task::query()
+            ->where(function ($q) use ($user, $projectIds) {
+                $q->where('user_id', $user->id)
+                    ->orWhereIn('project_id', $projectIds);
+            })
+            ->where('status', 'in_progress')
+            ->orderBy('due_at')
+            ->get();
+
         return Inertia::render('Dashboard', [
             'pending' => $pending,
             'overdue' => $overdue,
             'completed' => $completed,
+            'inProgress' => $inProgress,
             'flash' => [
                 'success' => session('success'),
                 'error' => session('error'),

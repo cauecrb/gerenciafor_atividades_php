@@ -153,4 +153,17 @@ class TaskController extends Controller
 
         return back()->with('success', __('Tarefa marcada como concluída.'));
     }
+
+    public function status(Request $request, Task $task)
+    {
+        abort_unless($task->user_id === Auth::id(), 403);
+        $validated = $request->validate([
+            'status' => ['required', 'in:pending,in_progress,completed'],
+        ]);
+        $task->status = $validated['status'];
+        $task->completed_at = $task->status === 'completed' ? now() : null;
+        $task->save();
+
+        return back()->with('success', __('Status da tarefa atualizado.'));
+    }
 }

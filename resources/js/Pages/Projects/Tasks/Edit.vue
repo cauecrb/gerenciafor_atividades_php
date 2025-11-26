@@ -21,9 +21,9 @@ const form = useForm({
 })
 
 function submit() {
-  form.post(route('projects.tasks.update', { project: props.project.id, task: props.task.id }), {
-    method: 'put',
-  })
+  const url = route('projects.tasks.update', { project: props.project.id, task: props.task?.id ?? props.task })
+  form.transform((data) => ({ ...data, _method: 'put' }))
+  form.post(url)
 }
 </script>
 
@@ -77,4 +77,3 @@ function submit() {
     </form>
   </div>
 </template>
-

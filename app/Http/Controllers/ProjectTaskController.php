@@ -87,7 +87,7 @@ class ProjectTaskController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'status' => ['required', 'in:pending,completed'],
+            'status' => ['required', 'in:pending,in_progress,completed'],
             'due_at' => ['nullable', 'date'],
             'assignees' => ['array'],
             'assignees.*' => ['integer', 'exists:users,id'],
@@ -111,5 +111,18 @@ class ProjectTaskController extends Controller
         $task->delete();
 
         return back()->with('success', __('Tarefa excluída.'));
+    }
+
+    public function status(Request $request, Project $project, Task $task)
+    {
+        abort_unless($this->canAccess($project) && $task->project_id === $project->id, 403);
+        $validated = $request->validate([
+            'status' => ['required', 'in:pending,in_progress,completed'],
+        ]);
+        $task->status = $validated['status'];
+        $task->completed_at = $task->status === 'completed' ? now() : null;
+        $task->save();
+
+        return back()->with('success', __('Status da tarefa atualizado.'));
     }
 }

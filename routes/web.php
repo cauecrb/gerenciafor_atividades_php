@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::get('projects/{project}/tasks/{task}/edit', [\App\Http\Controllers\ProjectTaskController::class, 'edit'])->name('projects.tasks.edit');
     Route::put('projects/{project}/tasks/{task}', [\App\Http\Controllers\ProjectTaskController::class, 'update'])->name('projects.tasks.update');
     Route::delete('projects/{project}/tasks/{task}', [\App\Http\Controllers\ProjectTaskController::class, 'destroy'])->name('projects.tasks.destroy');
+    Route::put('projects/{project}/tasks/{task}/status', [\App\Http\Controllers\ProjectTaskController::class, 'status'])->name('projects.tasks.status');
 
     Route::get('tasks', [\App\Http\Controllers\TaskController::class, 'index'])->name('tasks.index');
     Route::get('tasks/create', [\App\Http\Controllers\TaskController::class, 'create'])->name('tasks.create');
@@ -39,4 +40,5 @@ Route::middleware('auth')->group(function () {
     Route::put('tasks/{task}', [\App\Http\Controllers\TaskController::class, 'update'])->name('tasks.update');
     Route::delete('tasks/{task}', [\App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::post('tasks/{task}/complete', [\App\Http\Controllers\TaskController::class, 'complete'])->name('tasks.complete');
+    Route::put('tasks/{task}/status', [\App\Http\Controllers\TaskController::class, 'status'])->name('tasks.status');
 });
