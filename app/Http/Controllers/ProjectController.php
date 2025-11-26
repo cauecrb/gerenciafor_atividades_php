@@ -32,7 +32,10 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Projects/Create');
+        return Inertia::render('Projects/Create', [
+            'allUsers' => \App\Models\User::query()->select('id', 'name', 'email')->orderBy('name')->get(),
+            'ownerId' => \Illuminate\Support\Facades\Auth::id(),
+        ]);
     }
 
     /**
@@ -47,11 +50,12 @@ class ProjectController extends Controller
             'description' => ['nullable', 'string'],
             'start_date' => ['nullable', 'date'],
             'due_date' => ['nullable', 'date'],
-            'attachment' => ['nullable', 'file', 'extensions:pdf,jpeg,jpg,png', 'max:5120'],
+            'members' => ['array'],
+            'members.*' => ['integer', 'exists:users,id'],
         ]);
 
         $path = null;
-        if ($request->file('attachment')) {
+        if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
             $file = $request->file('attachment');
             $ext = strtolower($file->getClientOriginalExtension());
             $filename = Str::uuid().'.'.$ext;
@@ -70,6 +74,13 @@ class ProjectController extends Controller
             'attachment_path' => $path,
         ]);
 
+        $members = collect($validated['members'] ?? [])
+            ->push(Auth::id())
+            ->unique()
+            ->values()
+            ->all();
+        $project->members()->sync($members);
+
         return redirect()->route('projects.index')->with('success', __('Projeto criado com sucesso.'));
     }
 
@@ -84,7 +95,8 @@ class ProjectController extends Controller
 
         return Inertia::render('Projects/Edit', [
             'project' => $project,
-            'members' => $project->members()->select('id', 'name', 'email')->get(),
+            'members' => $project->members()->select('users.id', 'users.name', 'users.email')->get(),
+            'allUsers' => \App\Models\User::query()->select('id', 'name', 'email')->orderBy('name')->get(),
         ]);
     }
 
@@ -103,12 +115,13 @@ class ProjectController extends Controller
             'description' => ['nullable', 'string'],
             'start_date' => ['nullable', 'date'],
             'due_date' => ['nullable', 'date'],
-            'attachment' => ['nullable', 'file', 'extensions:pdf,jpeg,jpg,png', 'max:5120'],
+            'members' => ['array'],
+            'members.*' => ['integer', 'exists:users,id'],
         ]);
 
-        if ($request->file('attachment')) {
+        if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
             if ($project->attachment_path) {
-                Storage::disk('public')->delete($project->attachment_path);
+                FileFacade::delete(public_path('storage/'.$project->attachment_path));
             }
             $file = $request->file('attachment');
             $ext = strtolower($file->getClientOriginalExtension());
@@ -125,6 +138,18 @@ class ProjectController extends Controller
         $project->due_date = $validated['due_date'] ?? null;
         $project->save();
 
+        $previous = $project->members()->pluck('users.id')->all();
+        $new = $validated['members'] ?? [];
+        $project->members()->sync($new);
+        $removed = array_diff($previous, $new);
+        if (! empty($removed)) {
+            \App\Models\Task::query()
+                ->where('project_id', $project->id)
+                ->each(function ($task) use ($removed) {
+                    $task->users()->detach($removed);
+                });
+        }
+
         return redirect()->route('projects.index')->with('success', __('Projeto atualizado com sucesso.'));
     }
 
@@ -137,7 +162,7 @@ class ProjectController extends Controller
     {
         abort_unless($project->user_id === Auth::id(), 403);
         if ($project->attachment_path) {
-            Storage::disk('public')->delete($project->attachment_path);
+            FileFacade::delete(public_path('storage/'.$project->attachment_path));
         }
         $project->delete();
 

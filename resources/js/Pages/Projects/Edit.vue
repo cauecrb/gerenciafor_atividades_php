@@ -1,5 +1,6 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3'
+import { useForm, router } from '@inertiajs/vue3'
+import { ref } from 'vue'
 import AlertBanner from '../../Components/AlertBanner.vue'
 import AppLayout from '../../Layouts/AppLayout.vue'
 import FilePicker from '../../Components/FilePicker.vue'
@@ -9,6 +10,7 @@ defineOptions({ layout: AppLayout })
 const props = defineProps({
   project: { type: Object, required: true },
   members: { type: Array, default: () => [] },
+  allUsers: { type: Array, default: () => [] },
 })
 
 const form = useForm({
@@ -17,26 +19,34 @@ const form = useForm({
   start_date: props.project.start_date || '',
   due_date: props.project.due_date || '',
   attachment: null,
+  members: (props.members || []).map(m => m.id),
 })
 
 function submit() {
-  form.post(route('projects.update', props.project.id), {
-    forceFormData: true,
-    method: 'put',
-  })
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
+  const url = route('projects.update', { project: props.project.id })
+  form.transform((data) => ({ ...data, _method: 'put', _token: csrf }))
+  form.post(url, { forceFormData: true })
 }
 
-let emailToAdd = ''
-function addMember() {
-  if (!emailToAdd) return
-  const payload = { email: emailToAdd }
-  window.Inertia.post(route('projects.members.store', props.project.id), payload, {
-    onSuccess: () => { emailToAdd = '' },
-  })
+const showUsersMenu = ref(false)
+function addMemberId(id) {
+  const intId = Number(id)
+  if (!form.members.includes(intId)) {
+    form.members = [...form.members, intId]
+  }
+  showUsersMenu.value = false
 }
 
 function removeMember(userId) {
-  window.Inertia.delete(route('projects.members.destroy', { project: props.project.id, user: userId }))
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
+  const url = route('projects.members.destroy', { project: props.project.id, user: userId })
+  router.post(url, { _method: 'delete', _token: csrf }, {
+    onSuccess: () => {
+      form.members = form.members.filter(id => id !== userId)
+      router.reload({ only: ['members'] })
+    },
+  })
 }
 </script>
 
@@ -81,20 +91,30 @@ function removeMember(userId) {
 
     <div class="form-card" style="margin-top:1rem;">
       <h2 style="font-weight:700; margin-bottom:.5rem;">Membros do Projeto</h2>
-      <div style="display:flex; gap:.5rem; align-items:flex-end; margin-bottom:.75rem;">
-        <div class="field" style="flex:1; margin:0;">
-          <label class="label">Adicionar por email</label>
-          <input class="input" v-model="emailToAdd" type="email" placeholder="usuario@exemplo.com" />
+      <div class="field">
+        <label class="label">Adicionar membros</label>
+        <div style="position:relative;">
+          <button type="button" class="btn btn-secondary" @click="showUsersMenu = !showUsersMenu">Selecionar usuários</button>
+          <div v-if="showUsersMenu" style="position:absolute; z-index:50; background:#ffffff; border:1px solid #e5e7eb; border-radius:.375rem; box-shadow:0 2px 8px rgba(0,0,0,.08); margin-top:.25rem; width:100%; max-height:220px; overflow:auto;">
+            <div v-for="u in props.allUsers" :key="u.id" @click.prevent.stop="addMemberId(u.id)" style="padding:.5rem .75rem; cursor:pointer;">
+              {{ u.name }} <span style="color:#6b7280; font-size:12px;">({{ u.email }})</span>
+            </div>
+          </div>
         </div>
-        <button type="button" class="btn btn-primary" @click="addMember">Adicionar</button>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.5rem;">
+          <span v-for="id in form.members" :key="id" class="pill">{{ (props.allUsers.find(u => u.id === id) || {}).name || id }}</span>
+          <span v-if="!form.members.length" style="color:#6b7280;">Nenhum membro selecionado</span>
+        </div>
       </div>
+
+      <h3 style="font-weight:700; margin:.75rem 0 .5rem;">Participantes atuais</h3>
       <ul>
         <li v-for="m in props.members" :key="m.id" style="display:flex; justify-content:space-between; padding:.5rem 0; border-bottom:1px solid #f3f4f6;">
           <div>
             <div style="font-weight:600;">{{ m.name }}</div>
             <div style="color:#6b7280; font-size:13px;">{{ m.email }}</div>
           </div>
-          <button type="button" class="btn btn-outline" @click="removeMember(m.id)">Remover</button>
+          <button v-if="m.id !== props.project.user_id" type="button" class="btn btn-outline" @click="removeMember(m.id)">Remover</button>
         </li>
         <li v-if="!props.members.length" style="color:#6b7280;">Nenhum membro adicionado</li>
       </ul>

@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 const props = defineProps({
-  modelValue: { type: [File, Object, null], default: null },
+  modelValue: { type: [File, null], default: null },
   accept: { type: String, default: '' },
   label: { type: String, default: 'Selecionar arquivo' },
 })

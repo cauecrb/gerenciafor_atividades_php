@@ -43,7 +43,15 @@ class ProjectMemberController extends Controller
     public function destroy(Project $project, User $user)
     {
         abort_unless($project->user_id === Auth::id(), 403);
+        if ($user->id === $project->user_id) {
+            return back()->with('error', __('Não é possível remover o proprietário do projeto.'));
+        }
         $project->members()->detach($user->id);
+        \App\Models\Task::query()
+            ->where('project_id', $project->id)
+            ->each(function ($task) use ($user) {
+                $task->users()->detach($user->id);
+            });
 
         return back()->with('success', __('Membro removido com sucesso.'));
     }
