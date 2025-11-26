@@ -3,6 +3,7 @@ import AlertBanner from '../Components/AlertBanner.vue'
 import AppLayout from '../Layouts/AppLayout.vue'
 defineOptions({ layout: AppLayout })
 import { router } from '@inertiajs/vue3'
+const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
 const props = defineProps({
   pending: { type: Array, default: () => [] },
   overdue: { type: Array, default: () => [] },
@@ -31,14 +32,14 @@ function onDropStatus(e, targetStatus) {
   if (!obj.id) return
   if (obj.project_id) {
     const url = `/projects/${obj.project_id}/tasks/${obj.id}/status`
-    router.post(url, { status: targetStatus, _method: 'put' }, {
+    router.post(url, { status: targetStatus, _method: 'put', _token: csrf }, {
       preserveScroll: true,
       onSuccess: () => router.reload({ only: ['pending','inProgress','overdue','completed','flash'] })
     })
     return
   }
   const url = `/tasks/${obj.id}/status`
-  router.post(url, { status: targetStatus, _method: 'put' }, {
+  router.post(url, { status: targetStatus, _method: 'put', _token: csrf }, {
     preserveScroll: true,
     onSuccess: () => router.reload({ only: ['pending','inProgress','overdue','completed','flash'] })
   })
@@ -51,13 +52,13 @@ function editTask(t) {
 function completeTask(t) {
   if (t.project_id) {
     const url = `/projects/${t.project_id}/tasks/${t.id}/status`
-    router.post(url, { status: 'completed', _method: 'put' }, {
+    router.post(url, { status: 'completed', _method: 'put', _token: csrf }, {
       preserveScroll: true,
       onSuccess: () => router.reload({ only: ['pending','inProgress','overdue','completed','flash'] })
     })
   } else {
     const url = `/tasks/${t.id}/complete`
-    router.post(url, {}, {
+    router.post(url, { _token: csrf }, {
       preserveScroll: true,
       onSuccess: () => router.reload({ only: ['pending','inProgress','overdue','completed','flash'] })
     })

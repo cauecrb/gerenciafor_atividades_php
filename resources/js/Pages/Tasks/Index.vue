@@ -27,7 +27,8 @@ function remove(taskId) {
 }
 
 function complete(taskId) {
-  router.post(`/tasks/${taskId}/complete`)
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
+  router.post(`/tasks/${taskId}/complete`, { _token: csrf })
 }
 
 function formatDate(dt) {

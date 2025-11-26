@@ -4,7 +4,7 @@ import { router } from '@inertiajs/vue3'
 const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
 
 function logout() {
-  router.post(route('logout'))
+  router.post(route('logout'), { _token: csrf })
 }
 </script>
 
