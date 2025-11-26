@@ -31,6 +31,17 @@ Aplicação para gerenciamento de projetos e tarefas, com controle de membros po
 5. Acesso
    - Abra `http://localhost:8000/` e faça login/cadastro
 
+## Scripts de Inicialização
+- Windows (PowerShell):
+  - `powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1 -Port 8000`
+  - Abre dois terminais: backend em `http://127.0.0.1:8000` e frontend em `http://localhost:5173`. Pressione Enter para encerrar ambos.
+- Linux/macOS:
+  - `chmod +x scripts/start-dev.sh`
+  - `./scripts/start-dev.sh`
+  - Inicia backend e frontend; encerre com `Ctrl+C`.
+
+Pré-requisitos: PHP 8.4+, Composer, Node.js (npm) instalados e dependências do projeto (`composer install` e `npm install`).
+
 ## Estrutura de Dados (Tabelas)
 - `users`
   - `id`, `name`, `email`, `password`, `timestamps`
