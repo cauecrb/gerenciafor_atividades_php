@@ -1,59 +1,121 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Gerenciador de Atividades (Laravel + Inertia + Vue 3)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicação para gerenciamento de projetos e tarefas, com controle de membros por projeto, tarefas pessoais, anexos em PDF, filtros por status e prioridade, e interface SPA via Inertia.
 
-## About Laravel
+## Tecnologias
+- Laravel 12 (PHP 8.4)
+- Inertia.js + Vue 3
+- Vite
+- SQLite
+- Ziggy (rotas no front)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Recursos
+- Projetos: criar, editar, excluir, anexar PDF, datas de início e previsão
+- Membros de projeto: adicionar/remover (owner e membros têm acesso às tarefas do projeto)
+- Tarefas do projeto: criar, editar, excluir, atribuir membros, vencimento, status
+- Tarefas pessoais: CRUD completo, filtros por status/prioridade, anexar PDF, concluir tarefa
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalação e Execução
+1. Instale dependências
+   - `composer install`
+   - `npm install`
+2. Configure o ambiente
+   - Copie `.env.example` para `.env` e ajuste variáveis
+   - Gere a chave: `php artisan key:generate`
+   - Crie banco SQLite: `mkdir database && type NUL > database\database.sqlite` (Windows)
+3. Migrações
+   - `php artisan migrate --force`
+4. Rodar em desenvolvimento
+   - Backend: `php artisan serve --host=localhost --port=8000`
+   - Frontend: `npm run dev`
+5. Acesso
+   - Abra `http://localhost:8000/` e faça login/cadastro
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Estrutura de Dados (Tabelas)
+- `users`
+  - `id`, `name`, `email`, `password`, `timestamps`
+- `projects`
+  - `id`, `user_id` (owner), `title`, `description`, `start_date`, `due_date`, `attachment_path`, `timestamps`
+- `tasks`
+  - `id`, `user_id` (criador), `project_id` (nullable), `title`, `description`, `status` (pending|in_progress|completed), `priority` (low|medium|high), `due_at`, `completed_at`, `attachment_path`, `timestamps`
+- `project_user` (membros do projeto)
+  - `id`, `project_id`, `user_id`, `timestamps`, `unique(project_id,user_id)`
+- `task_user` (atribuições de usuários às tarefas)
+  - `id`, `task_id`, `user_id`, `timestamps`, `unique(task_id,user_id)`
 
-## Learning Laravel
+## Regras de Acesso
+- Somente owner e membros de um projeto podem ver/gerenciar as tarefas do projeto
+- Tarefas pessoais são visíveis e gerenciáveis apenas pelo seu criador (`user_id`)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Rotas Principais
+- Projetos
+  - `GET /projects` lista
+  - `POST /projects` cria
+  - `PUT /projects/{project}` atualiza
+  - `DELETE /projects/{project}` exclui
+  - `POST /projects/{project}/members` adiciona membro
+  - `DELETE /projects/{project}/members/{user}` remove membro
+  - `GET /projects/{project}/tasks` tarefas do projeto
+- Tarefas Pessoais
+  - `GET /tasks` lista com filtros
+  - `GET /tasks/create` formulário de criação
+  - `POST /tasks` cria (upload PDF em `public/storage/task_attachments`)
+  - `GET /tasks/{task}/edit` edição
+  - `PUT /tasks/{task}` atualiza
+  - `DELETE /tasks/{task}` exclui
+  - `POST /tasks/{task}/complete` marca como concluída
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## DER (Diagrama de Entidades e Relacionamentos)
+```mermaid
+erDiagram
+    USER ||--o{ PROJECT : owns
+    PROJECT ||--o{ TASK : has
+    USER ||--o{ TASK : creates
 
-## Laravel Sponsors
+    PROJECT }o--o{ USER : members
+    TASK }o--o{ USER : assigned
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+    USER {
+        bigint id PK
+        string name
+        string email
+        string password
+    }
+    PROJECT {
+        bigint id PK
+        bigint user_id FK
+        string title
+        text description
+        date start_date
+        date due_date
+        string attachment_path
+    }
+    TASK {
+        bigint id PK
+        bigint user_id FK
+        bigint project_id FK NULL
+        string title
+        text description
+        string status
+        string priority
+        datetime due_at NULL
+        datetime completed_at NULL
+        string attachment_path NULL
+    }
+    PROJECT_USER {
+        bigint id PK
+        bigint project_id FK
+        bigint user_id FK
+        unique(project_id, user_id)
+    }
+    TASK_USER {
+        bigint id PK
+        bigint task_id FK
+        bigint user_id FK
+        unique(task_id, user_id)
+    }
+```
 
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Observações
+- Uploads de tarefas são salvos em `public/storage/task_attachments` (acesso via `/storage/task_attachments/<arquivo>.pdf`).
+- Formatação de datas no front padronizada para `dd/mm/aaaa`.
