@@ -147,6 +147,9 @@ Notas:
 ## Observações
 - Uploads de tarefas são salvos em `public/storage/task_attachments` (acesso via `/storage/task_attachments/<arquivo>.pdf`).
 - Formatação de datas no front padronizada para `dd/mm/aaaa`.
+- Usuários de teste (banco pré-criado):
+  - `teste1@teste.com` / senha: `senhateste`
+  - `teste2@teste.com` / senha: `senhateste`
 
 ## Futuras Melhorias
 - Otimização do visual geral
