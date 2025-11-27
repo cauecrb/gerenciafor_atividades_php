@@ -10,7 +10,7 @@ Aplicação para gerenciamento de projetos e tarefas, com controle de membros po
 - Ziggy (rotas no front)
 
 ## Recursos
-- Projetos: criar, editar, excluir, anexar PDF, datas de início e previsão
+- Projetos: criar, editar, excluir, anexar PDF/Imagem, datas de início e previsão
 - Membros de projeto: adicionar/remover (owner e membros têm acesso às tarefas do projeto)
 - Tarefas do projeto: criar, editar, excluir, atribuir membros, vencimento, status
 - Tarefas pessoais: CRUD completo, filtros por status/prioridade, anexar PDF, concluir tarefa
@@ -69,8 +69,8 @@ Pré-requisitos: PHP 8.4+, Composer, Node.js (npm) instalados e dependências do
   - `GET /projects/{project}/tasks` tarefas do projeto
 - Tarefas Pessoais
   - `GET /tasks` lista com filtros
-  - `GET /tasks/create` formulário de criação
-  - `POST /tasks` cria (upload PDF em `public/storage/task_attachments`)
+  - `GET /tasks/create` formulário de criação (pode associar a um projeto)
+  - `POST /tasks` cria (upload PDF em `public/storage/task_attachments`) e aceita opcionalmente `project_id` para vincular ao projeto
   - `GET /tasks/{task}/edit` edição
   - `PUT /tasks/{task}` atualiza
   - `DELETE /tasks/{task}` exclui
@@ -132,21 +132,7 @@ Notas:
 - Uploads de tarefas são salvos em `public/storage/task_attachments` (acesso via `/storage/task_attachments/<arquivo>.pdf`).
 - Formatação de datas no front padronizada para `dd/mm/aaaa`.
 
-## Hospedagem (AlwaysData)
-- Site PHP com `document root` em `public/`.
-- Banco MySQL criado no painel (copie `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
-- Upload do código por Git/SSH (recomendado) ou SFTP.
-- Comandos no servidor (SSH):
-  - `composer install --no-dev --prefer-dist --optimize-autoloader`
-  - `npm ci && npm run build` (se o servidor tiver Node; caso contrário, envie `public/build` gerado localmente)
-  - `php artisan key:generate` (ou defina `APP_KEY` direto no `.env`)
-  - `php artisan config:cache && php artisan route:cache && php artisan view:cache`
-  - `php artisan migrate --force`
-- Variáveis `.env` (produção):
-  - `APP_ENV=production`
-  - `APP_URL=https://seu-subdominio.alwaysdata.net`
-  - `APP_KEY=...`
-  - `DB_CONNECTION=mysql`
-  - `DB_HOST=...` `DB_PORT=3306` `DB_DATABASE=...` `DB_USERNAME=...` `DB_PASSWORD=...`
-  - `SESSION_DRIVER=cookie`
-- Observação: para persistir anexos em produção, considere `FILESYSTEM_DISK=s3` com um bucket S3/R2.
+## Futuras Melhorias
+- Otimização do visual geral
+- Cards com visual mais amigável
+- Melhorar a animação dos cards ao serem arrastados
