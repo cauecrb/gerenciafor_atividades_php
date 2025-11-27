@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::table('tasks', function (Blueprint $table) {
             $table->string('priority')->default('medium');
             $table->string('attachment_path')->nullable();
-            $table->string('status')->default('pending')->change();
         });
     }
 
