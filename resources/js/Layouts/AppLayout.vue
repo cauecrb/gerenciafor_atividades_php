@@ -1,7 +1,10 @@
 <script setup>
-import { router } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 
 const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
+const page = usePage()
+const appName = 'Gerenciador de Atividades'
+const userName = page?.props?.auth?.user?.name || page?.props?.user?.name || ''
 
 function logout() {
   router.post(route('logout'), { _token: csrf })
@@ -21,6 +24,13 @@ function logout() {
       </nav>
     </aside>
     <main style="flex:1; background:#ffffff; color:#111827;">
+      <header style="display:flex; align-items:center; justify-content:space-between; padding:.75rem 1.25rem; border-bottom:1px solid #e5e7eb; background:#f9fafb;">
+        <div style="font-weight:700;">{{ appName }}</div>
+        <div style="display:flex; align-items:center; gap:.5rem;">
+          <span style="color:#374151;">{{ userName || 'Usuário' }}</span>
+          <button type="button" @click="logout" class="btn btn-outline">Sair</button>
+        </div>
+      </header>
       <div style="padding: 1.25rem 1.5rem;">
         <slot />
       </div>
