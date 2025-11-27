@@ -6,7 +6,7 @@ Aplicação para gerenciamento de projetos e tarefas, com controle de membros po
 - Laravel 12 (PHP 8.4)
 - Inertia.js + Vue 3
 - Vite
-- SQLite
+- MySQL (padrão) ou SQLite (alternativa via `.env`)
 - Ziggy (rotas no front)
 
 ## Recursos
@@ -22,7 +22,23 @@ Aplicação para gerenciamento de projetos e tarefas, com controle de membros po
 2. Configure o ambiente
    - Copie `.env.example` para `.env` e ajuste variáveis
    - Gere a chave: `php artisan key:generate`
-   - Crie banco SQLite: `mkdir database && type NUL > database\database.sqlite` (Windows)
+   - MySQL (padrão):
+     - Defina no `.env`:
+       - `DB_CONNECTION=mysql`
+       - `DB_HOST=127.0.0.1`
+       - `DB_PORT=3306`
+       - `DB_DATABASE=gerenciador`
+       - `DB_USERNAME=seu_usuario`
+       - `DB_PASSWORD=seu_password`
+     - Criar banco:
+       - CLI: `mysql -u <usuario> -p -e "CREATE DATABASE gerenciador CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"`
+       - SQL: `CREATE DATABASE gerenciador CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
+   - SQLite (alternativa):
+     - Crie o arquivo: `mkdir database && type NUL > database\database.sqlite` (Windows)
+      - Linux/macOS: `mkdir -p database && touch database/database.sqlite`
+     - Defina no `.env`:
+       - `DB_CONNECTION=sqlite`
+       - `DB_DATABASE=database/database.sqlite`
 3. Migrações
    - `php artisan migrate --force`
 4. Rodar em desenvolvimento
