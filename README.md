@@ -155,3 +155,22 @@ Notas:
 - Otimização do visual geral
 - Cards com visual mais amigável
 - Melhorar a animação dos cards ao serem arrastados
+
+## Capturas de Tela
+- Novo Projeto
+  - ![Novo Projeto](docs/screenshots/new-project.png)
+  - Formulário para criar projeto com título, descrição, datas, anexo (PDF/Imagem) e seleção de membros.
+- Lista de Projetos
+  - ![Lista de Projetos](docs/screenshotsr/projects-list.png)
+  - Tabela com início, previsão, anexo e ações: Tarefas, Editar, Excluir e criação de novo projeto.
+- Minhas Tarefas (Kanban)
+  - ![Minhas Tarefas](docs/screenshots/dashboard.png)
+  - Colunas por status: Pendente, Em andamento e Concluída. Botões para editar, concluir, excluir e ver anexos.
+- Cadastro
+  - ![Cadastro](docs/screenshots/register.png)
+  - Tela para criar conta com nome, email, senha e confirmação.
+- Login
+  - ![Login](docs/screenshots/login.png)
+  - Acesso com email e senha, opção lembrar-me e atalho para cadastro.
+
+Observação: salve as imagens nas rotas indicadas em `docs/screenshots/` para exibir no GitHub.
