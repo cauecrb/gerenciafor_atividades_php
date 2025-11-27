@@ -3,21 +3,24 @@ import { useForm } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import AlertBanner from '../../Components/AlertBanner.vue'
 
-const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
 const form = useForm({
   email: '',
   password: '',
   remember: false,
-  _token: csrf,
 })
 
 const generalError = ref('')
 
 function submit() {
   generalError.value = ''
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
+  form.transform((data) => ({ ...data, _token: csrf }))
   form.post(route('login'), {
     preserveScroll: true,
     preserveState: true,
+    onSuccess: () => {
+      window.location.href = route('dashboard')
+    },
     onError: (errors) => {
       generalError.value = errors?.email || 'Credenciais incorretas'
     },

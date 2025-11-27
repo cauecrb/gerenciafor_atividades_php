@@ -2,16 +2,16 @@
 import { useForm } from '@inertiajs/vue3'
 import AlertBanner from '../../Components/AlertBanner.vue'
 
-const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
 const form = useForm({
   name: '',
   email: '',
   password: '',
   password_confirmation: '',
-  _token: csrf,
 })
 
 function submit() {
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
+  form.transform((data) => ({ ...data, _token: csrf }))
   form.post(route('register'), {
     preserveScroll: true,
   })

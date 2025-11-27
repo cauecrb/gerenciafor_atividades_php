@@ -1,13 +1,17 @@
 <script setup>
 import { router, usePage } from '@inertiajs/vue3'
 
-const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
 const page = usePage()
 const appName = 'Gerenciador de Atividades'
 const userName = page?.props?.auth?.user?.name || page?.props?.user?.name || ''
 
 function logout() {
-  router.post(route('logout'), { _token: csrf })
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || ''
+  router.post(route('logout'), { _token: csrf }, {
+    onSuccess: () => {
+      window.location.href = route('login')
+    },
+  })
 }
 </script>
 
