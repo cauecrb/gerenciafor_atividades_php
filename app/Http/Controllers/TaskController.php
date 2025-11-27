@@ -50,7 +50,19 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Tasks/Create');
+        $user = Auth::user();
+        $projects = \App\Models\Project::query()
+            ->select('id', 'title')
+            ->where('user_id', $user->id)
+            ->orWhereHas('members', function ($q) use ($user) {
+                $q->where('users.id', $user->id);
+            })
+            ->orderBy('title')
+            ->get();
+
+        return Inertia::render('Tasks/Create', [
+            'projects' => $projects,
+        ]);
     }
 
     /**
@@ -67,7 +79,22 @@ class TaskController extends Controller
             'priority' => ['required', 'in:low,medium,high'],
             'status' => ['required', 'in:pending,in_progress,completed'],
             'attachment' => ['nullable', 'file', 'extensions:pdf', 'max:5120'],
+            'project_id' => ['nullable', 'integer', 'exists:projects,id'],
         ]);
+
+        $projectId = $validated['project_id'] ?? null;
+        if ($projectId) {
+            $canAccess = \App\Models\Project::query()
+                ->where('id', $projectId)
+                ->where(function ($q) {
+                    $q->where('user_id', Auth::id())
+                        ->orWhereHas('members', function ($m) {
+                            $m->where('users.id', Auth::id());
+                        });
+                })
+                ->exists();
+            abort_unless($canAccess, 403);
+        }
 
         $path = null;
         if ($request->file('attachment')) {
@@ -81,6 +108,7 @@ class TaskController extends Controller
 
         Task::create([
             'user_id' => Auth::id(),
+            'project_id' => $projectId,
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'due_at' => $validated['due_at'] ?? null,

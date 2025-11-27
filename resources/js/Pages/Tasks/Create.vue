@@ -13,6 +13,7 @@ const form = useForm({
   priority: 'medium',
   status: 'pending',
   attachment: null,
+  project_id: '',
 })
 
 function submit() {
@@ -41,7 +42,14 @@ function submit() {
         <input class="input" v-model="form.description" type="text" />
       </div>
 
-      <div class="form-row">
+  <div class="form-row">
+        <div class="field">
+          <label class="label">Projeto</label>
+          <select class="input" v-model="form.project_id">
+            <option value="">Sem projeto</option>
+            <option v-for="p in $page.props.projects || []" :key="p.id" :value="p.id">{{ p.title }}</option>
+          </select>
+        </div>
         <div class="field">
           <label class="label">Status</label>
           <select class="input" v-model="form.status">
@@ -77,4 +85,3 @@ function submit() {
     </form>
   </div>
   </template>
-
